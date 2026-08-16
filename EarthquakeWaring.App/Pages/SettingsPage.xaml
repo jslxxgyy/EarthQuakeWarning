@@ -317,6 +317,7 @@
                 <ComboBoxItem>四川地震局</ComboBoxItem>
                 <ComboBoxItem>Wolfx API (四川地震局)</ComboBoxItem>
                 <ComboBoxItem>Wolfx API (中国地震台网)</ComboBoxItem>
+                <ComboBoxItem>MIUI 预警</ComboBoxItem>
             </ComboBox>
         </wpfui:CardControl>
         <wpfui:CardControl

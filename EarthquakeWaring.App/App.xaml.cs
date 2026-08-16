@@ -88,6 +88,7 @@ namespace EarthquakeWaring.App
             service.AddSingleton<IEarthQuakeApi, SichuanEarthQuakeApi>();
             service.AddSingleton<IEarthQuakeApi, WolfxSceewApi>();
             service.AddSingleton<IEarthQuakeApi, WolfxCencApi>();
+            service.AddSingleton<IEarthQuakeApi, MiuiEarthQuakeApi>();
             service.AddSingleton<IEarthQuakeApiWrapper, EarthQuakeApiWrapper>();
             service.AddSingleton<IHttpRequester, HttpRequester>();
             service.AddTransient<IEarthQuakeTracker, EarthQuakeTracker>();

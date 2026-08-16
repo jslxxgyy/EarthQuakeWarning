@@ -39,6 +39,7 @@
 * [成都高新减灾研究所](http://www.365icl.com/) / [成都市美幻科技有限公司](http://www.huania.com/) 的 [地震预警](https://download.chinaeew.cn/mobile)
 * [四川地震局](https://www.scdzj.gov.cn/)
 * [Wolfx 的 减灾 API](https://api.wolfx.jp/)
+* MIUI 地震预警
 
 ## Licence
 
