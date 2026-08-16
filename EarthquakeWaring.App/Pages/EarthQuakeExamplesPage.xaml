@@ -10,7 +10,7 @@
       xmlns:extensions="clr-namespace:EarthquakeWaring.App.Extensions"
       xmlns:viewModels="clr-namespace:EarthquakeWaring.App.Infrastructure.Models.ViewModels"
       mc:Ignorable="d"
-      Title="预警案例">
+      Title="示例地震">
     <d:Page.DataContext>
         <viewModels:EarthQuakesListPageViewModel />
     </d:Page.DataContext>
@@ -21,7 +21,12 @@
         <extensions:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Page.Resources>
     <Grid>
-        <ListView x:Name="ListView" ItemsSource="{Binding InformationList}">
+        <ListView
+            x:Name="ListView"
+            ItemsSource="{Binding InformationList}"
+            ScrollViewer.PanningMode="Both"
+            Stylus.IsPressAndHoldEnabled="False"
+            Background="{DynamicResource ControlFillColorDefaultBrush}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type earthQuakeModels:EarthQuakeTrackingInformation}">
                     <Grid Height="75" Margin="8">
@@ -39,7 +44,7 @@
                             CornerRadius="5">
                             <wpfui:SymbolIcon Symbol="ErrorCircle24" Visibility="{Binding DontUseShouldAlert, Converter={StaticResource BoolToVisibilityConverter}}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                         </Border>
-                        <Grid MouseDown="ShowEarthQuakeDetail" Tag="{Binding }" Grid.Column="1" Margin="5">
+                        <Grid Grid.Column="1" Margin="5">
                             <Grid.RowDefinitions>
                                 <RowDefinition />
                                 <RowDefinition />

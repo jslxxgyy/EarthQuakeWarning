@@ -7,6 +7,7 @@ using EarthquakeWaring.App.Services;
 using EarthquakeWaring.App.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -87,28 +88,39 @@ public partial class EarthQuakesListPage : Page
         var info = (((sender as Button)?.Tag as EarthQuakeTrackingInformation)!);
         var tracker = _service.GetService<IEarthQuakeTracker>();
         var timeHandler = _service.GetService<ITimeHandler>();
-        tracker!.SimulateTimeSpan = DateTime.Now + timeHandler!.Offset - info.StartTime;
-        tracker!.SimulateUpdates = await _quakeApi.GetEarthQuakeInfo(info.Id, cancellationTokenSource.Token);
-        tracker?.StartTrack(new EarthQuakeInfoBase()
-        {
-            Id = info.Id
-        }, cancellationTokenSource);
-    }
+        if (tracker is null || timeHandler is null)
+            return;
 
-    private void ShowEarthQuakeDetail(object sender, MouseButtonEventArgs e)
-    {
-        if (((Grid)sender).Tag is EarthQuakeTrackingInformation info)
-        {
-            // _service.GetService<MainWindow>()?.RootFrame.Navigate(new EarthQuakeDetail(info, _currentPosition.Setting));
-            if (!App.MainWindowOpened)
-            {
-                _service.GetService<MainWindow>()?.Show();
-            }
+        tracker.SimulateTimeSpan = DateTime.Now + timeHandler.Offset - info.StartTime;
 
-            if (App.MainWindowOpened)
+        var earthQuakeInfo = new EarthQuakeInfoBase()
+        {
+            Id = info.Id,
+            StartAt = info.StartTime,
+            UpdateAt = info.UpdateTime,
+            Magnitude = info.Magnitude,
+            Depth = info.Depth,
+            Latitude = info.Latitude,
+            Longitude = info.Longitude,
+            PlaceName = info.Position
+        };
+
+        tracker.SimulateUpdates = new List<EarthQuakeInfoBase> { earthQuakeInfo };
+        tracker.StartTrack(earthQuakeInfo, cancellationTokenSource);
+
+        try
+        {
+            var updates = await _quakeApi.GetEarthQuakeInfo(info.Id, cancellationTokenSource.Token)
+                .ConfigureAwait(false);
+            if (updates?.Count > 0)
             {
-                App.RootFrame?.Navigate(new EarthQuakeDetail(info, _currentPosition.Setting));
+                tracker.SimulateUpdates = updates;
             }
         }
+        catch
+        {
+            // 忽略模拟过程中获取更新数据的异常，保持当前模拟流程继续
+        }
     }
+
 }

@@ -10,10 +10,18 @@ public class CountDownHumanizer : IValueConverter
     {
         return value switch
         {
-            int countDown => countDown > 0 ? countDown.ToString() : $"到达 {Math.Abs(countDown)} 秒",
-            double countDownDouble => countDownDouble > 0
-                ? countDownDouble.ToString("F1")
-                : $"到 {Math.Abs(countDownDouble):F1} 秒",
+            int countDown => countDown switch
+            {
+                > 0 => countDown.ToString(),
+                0 => " 地震到达！",
+                _ => $"到达 {Math.Abs(countDown)} 秒"
+            },
+            double countDownDouble => countDownDouble switch
+            {
+                > 0 => countDownDouble.ToString("F1"),
+                0 => " 地震到达！",
+                _ => $"到达 {Math.Abs(countDownDouble):F1} 秒"
+            },
             _ => "未知"
         };
     }

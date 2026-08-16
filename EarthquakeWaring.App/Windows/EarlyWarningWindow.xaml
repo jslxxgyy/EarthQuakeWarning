@@ -6,14 +6,15 @@
     xmlns:earthQuakeModels="clr-namespace:EarthquakeWaring.App.Infrastructure.Models.EarthQuakeModels"
     xmlns:extensions="clr-namespace:EarthquakeWaring.App.Extensions"
     xmlns:local="clr-namespace:EarthquakeWaring.App.Windows"
-    WindowStartupLocation="CenterScreen"
+    WindowStyle="None"
+    WindowState="Maximized"
     Topmost="True"
     Closed="EarlyWarningWindow_OnClosed"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="地震预警"
-    Width="360"
-    Height="440"
     Background="{DynamicResource ControlElevationBorderBrush}"
+    AllowsTransparency="False"
+    ResizeMode="NoResize"
     mc:Ignorable="d">
     <d:Window.DataContext>
         <earthQuakeModels:EarthQuakeTrackingInformation />
@@ -26,7 +27,26 @@
         <extensions:DateTimeHumanizer x:Key="DateTimeHumanizer" />
         <extensions:DistanceHumanizer x:Key="DistanceHumanizer" />
     </Window.Resources>
-    <Grid MouseDown="ShowDetail" Background="{Binding Stage, Mode=OneWay, Converter={StaticResource StageToColor}}">
+    <Grid>
+        <!-- 右上角退出按钮 -->
+        <Button
+            x:Name="CloseButton"
+            Grid.ZIndex="10"
+            Width="48"
+            Height="48"
+            Margin="0,8,8,0"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Background="#80FFFFFF"
+            BorderThickness="0"
+            Click="CloseButton_Click"
+            Content="✕"
+            Cursor="Hand"
+            FontSize="24"
+            Foreground="White"
+            ToolTip="关闭预警窗口" />
+
+        <Grid Background="{Binding Stage, Mode=OneWay, Converter={StaticResource StageToColor}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="22" />
             <!--  TextTip  -->
@@ -157,8 +177,9 @@
             <TextBlock Grid.Row="2"
                        FontSize="15"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                       Text="中国地震预警网 大陆地震预警中心&#x0a;成都高新减灾研究所"
+                       Text="四川地震局&#x0a;中国地震台网&#x0a;成都高新减灾研究所"
                        TextAlignment="Center" />
         </Grid>
+    </Grid>
     </Grid>
 </Window>

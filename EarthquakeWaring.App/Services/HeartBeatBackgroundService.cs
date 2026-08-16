@@ -23,7 +23,8 @@ public class HeartBeatBackgroundService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             await _publisher.Publish(new HeartBeatNotification(DateTime.Now + _timeHandler!.Offset), stoppingToken).ConfigureAwait(false);
-            await Task.Delay(1000, stoppingToken).ConfigureAwait(false);
+            // 每 2.5 秒检查一次，降低空闲时的 CPU 占用
+            await Task.Delay(2500, stoppingToken).ConfigureAwait(false);
         }
     }
 }

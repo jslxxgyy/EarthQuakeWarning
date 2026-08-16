@@ -24,7 +24,12 @@
             x:Name="LoadingRing"
             IsIndeterminate="True"
             Visibility="{Binding ProgressRingVisibility}" />
-        <ListView x:Name="ListView" ItemsSource="{Binding InformationList}">
+        <ListView
+            x:Name="ListView"
+            ItemsSource="{Binding InformationList}"
+            ScrollViewer.PanningMode="Both"
+            Stylus.IsPressAndHoldEnabled="False"
+            Background="{DynamicResource ControlFillColorDefaultBrush}">
             <ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type earthQuakeModels:EarthQuakeTrackingInformation}">
                     <Grid Height="75" Margin="8">
@@ -48,7 +53,7 @@
                         <Grid
                             Grid.Column="1"
                             Margin="5"
-                            MouseDown="ShowEarthQuakeDetail"
+
                             Tag="{Binding .}">
                             <Grid.RowDefinitions>
                                 <RowDefinition />

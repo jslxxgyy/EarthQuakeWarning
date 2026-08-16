@@ -45,6 +45,7 @@ namespace EarthquakeWaring.App
         {
             loggingBuilder.ClearProviders();
             loggingBuilder.AddSerilog(new LoggerConfiguration()
+                .MinimumLevel.Warning()
 #if DEBUG
                 .WriteTo.Console()
 #endif
@@ -56,6 +57,9 @@ namespace EarthquakeWaring.App
         {
             base.OnStartup(e);
             DI.Services = Host.Services;
+
+            // 程序启动时预加载报警音频到内存，降低预警窗口弹出后的播放延迟
+            EarlyWarningWindow.InitializeAudio();
 
             // Kill Other Instance
             foreach (var process in Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName)
@@ -76,7 +80,7 @@ namespace EarthquakeWaring.App
             Host.Services.GetService<INTPHandler>()?.GetNTPServerTime();
             var cts = new CancellationTokenSource();
             cts.CancelAfter(TimeSpan.FromSeconds(10));
-            Host.Services.GetService<IGNSSHandler>()?.GetCurrentInfoAsync(cts.Token);
+            Host.Services.GetService<ILocationHandler>()?.GetCurrentInfoAsync(cts.Token);
             Host.RunAsync();
         }
 
@@ -97,13 +101,12 @@ namespace EarthquakeWaring.App
             service.AddSingleton(typeof(ISetting<>), typeof(FileJsonSetting<>));
             service.AddSingleton<ITimeHandler, TimeManager>();
             service.AddSingleton<INTPHandler, NTPTimeManager>();
-            service.AddSingleton<IGNSSHandler, GNSSManager>();
+            service.AddSingleton<ILocationHandler, WindowsLocationManager>();
 
             // For UI
             service.AddTransient<MainWindow>();
             service.AddTransient<SettingsPage>();
             service.AddTransient<EarthQuakesListPage>();
-            service.AddTransient<EarthQuakeDetail>();
             service.AddTransient<SettingsPageViewModel>();
             service.AddTransient<EarthQuakeExamplesPage>();
 

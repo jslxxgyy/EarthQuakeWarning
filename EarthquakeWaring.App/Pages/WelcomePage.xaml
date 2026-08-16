@@ -18,12 +18,12 @@
         <TextBlock
             FontSize="28"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="仅供学习交流使用,下载后请在 24 小时内删除"
+            Text="仅供学习交流使用，请勿传播或进行二次分享，下载后请在 24 小时内删除"
             TextAlignment="Center" />
         <TextBlock
             FontSize="28"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="请勿传播或进行二次分享"
+            Text="App内避震建议仅供参考，开发者您所采取的行动导致的任何后果不承担责任"
             TextAlignment="Center" />
         <TextBlock
             FontSize="28"

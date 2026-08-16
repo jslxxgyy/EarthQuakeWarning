@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace EarthquakeWaring.App.Pages;
 
@@ -33,6 +34,31 @@ public partial class SettingsPage : Page
         dontFire = false;
     }
 
+    /// <summary>
+    /// 页面加载完成后，找到 UiPageScrollable 提供的 ScrollViewer 并启用触摸平移
+    /// </summary>
+    private void SettingsPage_OnLoaded(object sender, RoutedEventArgs e)
+    {
+        var scrollViewer = FindVisualChild<ScrollViewer>(this);
+        if (scrollViewer != null)
+        {
+            scrollViewer.PanningMode = PanningMode.Both;
+            scrollViewer.PanningDeceleration = 0.01;
+        }
+    }
+
+    private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+    {
+        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+        {
+            var child = VisualTreeHelper.GetChild(parent, i);
+            if (child is T t) return t;
+            var result = FindVisualChild<T>(child);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
     private void OpenPositionSelector(object sender, RoutedEventArgs e)
     {
         Process.Start("explorer.exe", "https://lbs.qq.com/getPoint/");
@@ -52,14 +78,26 @@ public partial class SettingsPage : Page
             .DeleteValue(nameof(EarthquakeWaring));
     }
 
+    private void ShowNotifyIcon_OnChecked(object sender, RoutedEventArgs e)
+    {
+        if (dontFire) return;
+        _services.GetService<ITrayIconHolder>()?.ShowIcon();
+    }
+
+    private void ShowNotifyIcon_OnUnchecked(object sender, RoutedEventArgs e)
+    {
+        if (dontFire) return;
+        _services.GetService<ITrayIconHolder>()?.HideIcon();
+    }
+
     private void DeveloperClicked(object sender, RoutedEventArgs e)
     {
-        Process.Start("explorer.exe", "https://github.com/kengwang");
+        Process.Start("explorer.exe", "https://github.com/jslxxgyy");
     }
 
     private void OpenSourceClick(object sender, RoutedEventArgs e)
     {
-        Process.Start("explorer.exe", "https://github.com/kengwang/EarthQuakeWarning");
+        Process.Start("explorer.exe", "https://github.com/jslxxgyy/EarthQuakeWarning");
     }
 
     private void ThanksClick(object sender, RoutedEventArgs e)
@@ -98,10 +136,10 @@ public partial class SettingsPage : Page
         }
     }
 
-    private void GetGnssInformation(object sender, RoutedEventArgs e)
+    private void GetLocationInformation(object sender, RoutedEventArgs e)
     {
         var cts = new CancellationTokenSource();
         cts.CancelAfter(TimeSpan.FromSeconds(10));
-        _ = _services.GetService<IGNSSHandler>()?.GetCurrentInfoAsync(cts.Token);
+        _ = _services.GetService<ILocationHandler>()?.GetCurrentInfoAsync(cts.Token);
     }
 }

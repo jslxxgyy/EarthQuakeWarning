@@ -1,4 +1,5 @@
 ﻿using EarthquakeWaring.App.Infrastructure.ServiceAbstraction;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -10,7 +11,11 @@ namespace EarthquakeWaring.App.Services;
 
 public class HttpRequester : IHttpRequester
 {
-    private readonly HttpClient _httpClient = new();
+    // 复用 HttpClient 避免端口耗尽；设置超时避免长时间挂起
+    private static readonly HttpClient _httpClient = new()
+    {
+        Timeout = TimeSpan.FromSeconds(10)
+    };
 
 
     public async Task<string> GetString(string url, Dictionary<string, string>? data,

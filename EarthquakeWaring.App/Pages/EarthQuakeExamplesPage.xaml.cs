@@ -102,15 +102,15 @@ public partial class EarthQuakeExamplesPage : Page
         }).ToList();
         tracker?.StartTrack(new EarthQuakeInfoBase()
         {
-            Id = info.Id
+            Id = info.Id,
+            StartAt = info.StartTime,
+            UpdateAt = info.UpdateTime,
+            Magnitude = info.Magnitude,
+            Depth = info.Depth,
+            Latitude = info.Latitude,
+            Longitude = info.Longitude,
+            PlaceName = info.Position
         }, cancellationTokenSource);
     }
 
-    private void ShowEarthQuakeDetail(object sender, MouseButtonEventArgs e)
-    {
-        if (((Grid)sender).Tag is EarthQuakeTrackingInformation info)
-        {
-            _service.GetService<MainWindow>()?.RootFrame.Navigate(new EarthQuakeDetail(info, _currentPosition.Setting));
-        }
-    }
 }

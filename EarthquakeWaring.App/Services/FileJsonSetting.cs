@@ -3,16 +3,19 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace EarthquakeWaring.App.Services;
 
-public class FileJsonSetting<TSetting> : ISetting<TSetting> where TSetting : INotificationOption, new()
+public class FileJsonSetting<TSetting> : ISetting<TSetting>, INotifyPropertyChanged where TSetting : INotificationOption, new()
 {
     private readonly IJsonConvertService _jsonConvertService;
     private readonly ILogger<FileJsonSetting<TSetting>> _logger;
 
     private TSetting? _inMemorySetting;
     private readonly string _settingName;
+
+    public event PropertyChangedEventHandler? PropertyChanged;
 
     public TSetting? Setting => _inMemorySetting;
 
@@ -64,6 +67,11 @@ public class FileJsonSetting<TSetting> : ISetting<TSetting> where TSetting : INo
         try
         {
             if (!Directory.Exists("settings")) Directory.CreateDirectory("settings");
+
+            // 解绑旧对象的事件，防止内存泄漏
+            if (_inMemorySetting != null)
+                _inMemorySetting.PropertyChanged -= InMemorySettingOnPropertyChanged;
+
             if (File.Exists($"settings/{_settingName}.json"))
                 _inMemorySetting =
                     _jsonConvertService.ConvertTo<TSetting>(
@@ -73,10 +81,20 @@ public class FileJsonSetting<TSetting> : ISetting<TSetting> where TSetting : INo
                 File.WriteAllText($"settings/{_settingName}.json", "{}");
                 _inMemorySetting = new TSetting();
             }
+
+            // 绑定新对象的事件
+            if (_inMemorySetting != null)
+                _inMemorySetting.PropertyChanged += InMemorySettingOnPropertyChanged;
         }
         catch (Exception e)
         {
             _inMemorySetting = new TSetting();
         }
+        OnPropertyChanged(nameof(Setting));
+    }
+
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

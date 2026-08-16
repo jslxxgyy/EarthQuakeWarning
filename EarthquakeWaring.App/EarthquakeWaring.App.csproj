@@ -2,14 +2,16 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net6.0-windows</TargetFramework>
-        <Nullable>enable</Nullable>
+        <TargetFramework>net10.0-windows10.0.17763.0</TargetFramework>        <!-- 最低系统版本：Windows 10 1809 (build 17763)。
+            因代码使用了 WinRT 定位 API (Windows.Devices.Geolocation)，最低不能低于 1607；
+            1809 是最稳妥且官方充分支持的下限。 -->
+        <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>        <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <LangVersion>preview</LangVersion>
         <IsPackable>false</IsPackable>
-        <PackageVersion>1.1.1</PackageVersion>
-        <AssemblyVersion>1.1.1.0</AssemblyVersion>
-        <FileVersion>1.1.1.0</FileVersion>
+        <PackageVersion>2.0.0</PackageVersion>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+        <FileVersion>2.0.0.0</FileVersion>
         <NeutralLanguage>zh-Hans</NeutralLanguage>
         <UseWindowsForms>True</UseWindowsForms>
         <PackageIcon>original.ico</PackageIcon>
@@ -17,18 +19,14 @@
 
     <ItemGroup>
       <PackageReference Include="GuerrillaNtp" Version="3.1.0" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-      <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
-      <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1901.177" />
-      <PackageReference Include="NAudio.Core" Version="2.1.0" />
-      <PackageReference Include="NAudio.Wasapi" Version="2.1.0" />
-      <PackageReference Include="Serilog.Extensions.Hosting" Version="7.0.0" />
-      <PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-      <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-      <PackageReference Include="SharpGIS.NmeaParser" Version="2.2.2" />
-      <PackageReference Include="System.IO.Ports" Version="7.0.0" />
-      <PackageReference Include="System.Speech" Version="7.0.0" />
-      <PackageReference Include="Vanara.PInvoke.Kernel32" Version="3.4.16" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
+      <PackageReference Include="NAudio.Core" Version="2.2.1" />
+      <PackageReference Include="NAudio.Wasapi" Version="2.2.1" />
+      <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
+      <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+      <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+      <PackageReference Include="Vanara.PInvoke.Kernel32" Version="4.1.2" />
       <PackageReference Include="WPF-UI" Version="2.0.3" />
     </ItemGroup>
 
@@ -46,4 +44,15 @@
         </None>
     </ItemGroup>
 
+    <ItemGroup>
+        <None Include="..\alarm\**" Link="alarm\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\LICENCE" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\Readme.md" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 </Project>

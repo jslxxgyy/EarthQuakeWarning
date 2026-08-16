@@ -1,25 +1,18 @@
-﻿using EarthquakeWaring.App.Infrastructure.ServiceAbstraction;
+using EarthquakeWaring.App.Infrastructure.ServiceAbstraction;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace EarthquakeWaring.App.Infrastructure.Models.SettingModels;
 
-public class AlertLimit : INotificationOption
+public class LocationSetting : INotificationOption
 {
-    private double _dayMagnitude = 3.0;
-    private double _nightMagnitude = 2.0;
+    private bool _useWindowsLocation = false;
 
-    public double DayMagnitude
+    public bool UseWindowsLocation
     {
-        get => _dayMagnitude;
-        set => SetField(ref _dayMagnitude, value);
-    }
-
-    public double NightMagnitude
-    {
-        get => _nightMagnitude;
-        set => SetField(ref _nightMagnitude, value);
+        get => _useWindowsLocation;
+        set => SetField(ref _useWindowsLocation, value);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

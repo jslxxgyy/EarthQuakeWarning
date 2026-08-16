@@ -32,12 +32,6 @@ namespace EarthquakeWaring.App.Infrastructure.Models.SettingModels
                 SetField(ref _timeCheckInterval, value);
             }
         }
-        private bool _useGNSSTime = false;
-        public bool UseGNSSTime
-        {
-            get => _useGNSSTime;
-            set => SetField(ref _useGNSSTime, value);
-        }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

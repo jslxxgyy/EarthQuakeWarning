@@ -6,9 +6,10 @@
     xmlns:pages="clr-namespace:EarthquakeWaring.App.Pages"
     xmlns:wpfui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="地震预警"
-    Width="800"
-    Height="450"
+    Width="1150"
+    Height="625"
     Closed="MainWindow_OnClosed"
+    ManipulationBoundaryFeedback="MainWindow_OnManipulationBoundaryFeedback"
     Style="{StaticResource UiWindow}"
     WindowStartupLocation="CenterScreen">
     <Grid>
@@ -20,7 +21,7 @@
         <!--  The title bar contains window navigation elements and some Tray related extras.  -->
         <!--  You can put additional controls in the header, such as a search bar.  -->
         <!--  <wpfui:TitleBar.Header />  -->
-        <wpfui:TitleBar Title="地震预警" Grid.Row="0" />
+        <wpfui:TitleBar Title="地震预警(非官方)" Grid.Row="0" />
 
         <Grid
             x:Name="RootMainGrid"
@@ -41,11 +42,11 @@
                 <wpfui:NavigationStore.Items>
                     <wpfui:NavigationItem
                         Click="OnNavigatingEarthQuakesList"
-                        Content="地震列表"
+                        Content="预警记录"
                         Icon="Globe24" />
                     <wpfui:NavigationItem
                         Click="OnNavigateExamples"
-                        Content="预警案例"
+                        Content="示例地震"
                         Icon="Book24" />
                 </wpfui:NavigationStore.Items>
                 <wpfui:NavigationStore.Footer>

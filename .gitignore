@@ -1,8 +1,22 @@
+# 构建输出
 bin/
 obj/
 /packages/
+Publish/
+publish-release/
+
 riderModule.iml
 /_ReSharper.Caches/
 .idea/
 .vs/
-Publish/
+*.DotSettings.user
+*.user
+*.suo
+
+.DS_Store
+Thumbs.db
+
+.qodo/
+
+/EarthquakeWaring.App/bin
+/EarthquakeWaring.App/obj
