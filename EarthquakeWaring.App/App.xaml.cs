@@ -58,6 +58,9 @@ namespace EarthquakeWaring.App
             base.OnStartup(e);
             DI.Services = Host.Services;
 
+            // 启动时立即检查配置健康状态（在设置文件被自动创建之前判定是否为首次启动）
+            Host.Services.GetService<ConfigHealthChecker>()?.Recheck();
+
             // 程序启动时预加载报警音频到内存，降低预警窗口弹出后的播放延迟
             EarlyWarningWindow.InitializeAudio();
 
@@ -89,11 +92,11 @@ namespace EarthquakeWaring.App
             // For Background Services
             service.AddSingleton<IEarthQuakeCalculator, HuaniaEarthQuakeCalculator>();
             service.AddSingleton<IEarthQuakeApi, HuaniaEarthQuakeApi>();
-            service.AddSingleton<IEarthQuakeApi, SichuanEarthQuakeApi>();
             service.AddSingleton<IEarthQuakeApi, WolfxSceewApi>();
             service.AddSingleton<IEarthQuakeApi, WolfxCencApi>();
             service.AddSingleton<IEarthQuakeApiWrapper, EarthQuakeApiWrapper>();
             service.AddSingleton<IHttpRequester, HttpRequester>();
+            service.AddSingleton<ConfigHealthChecker>();
             service.AddTransient<IEarthQuakeTracker, EarthQuakeTracker>();
             service.AddSingleton<INotificationPublisher, NotificationPublisher>();
             service.AddSingleton<INotificationHandler<HeartBeatNotification>, EarthQuakeInfoUpdater>();

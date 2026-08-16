@@ -34,8 +34,7 @@
 ## 最低系统要求
 
 Windows 10 1809 及以上，或 Windows 10 LTSC 2019 及以上，内核版本 10.0.17763 及以上  
-支持 x64 与 x86 架构 CPU；ARM64 设备请使用专门发布的 `win-arm64` 版本以获得原生运行性能，
-否则默认版本在 Windows 11 ARM 上会以 x64 仿真方式运行  
+支持 x64 与 x86 架构 CPU；ARM64 设备可使用专门发布的 `win-arm64` 版本以获得原生运行性能  
 需要安装 Microsoft Windows .NET Desktop Runtime 10.0
 
 ## AI 生成说明

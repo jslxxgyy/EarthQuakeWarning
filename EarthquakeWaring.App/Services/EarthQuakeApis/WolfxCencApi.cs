@@ -1,8 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using EarthquakeWaring.App.Infrastructure.Models.EarthQuakeModels;
@@ -13,7 +11,8 @@ namespace EarthquakeWaring.App.Services.EarthQuakeApis;
 
 public class WolfxCencApi : IEarthQuakeApi
 {
-    public string ApiUrl = "https://api.wolfx.jp/cenc_eqlist.json";
+    // 中国地震台网 地震速报（实时 EEW）
+    public string ApiUrl = "https://api.wolfx.jp/cenc_eew.json";
 
     private readonly IJsonConvertService _jsonConvertService;
     private readonly IHttpRequester _httpRequester;
@@ -34,14 +33,14 @@ public class WolfxCencApi : IEarthQuakeApi
         {
             var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             cts.CancelAfter(5000);
-            var result = await _httpRequester.GetString(ApiUrl, cancellationToken: cts.Token);
-            result = Regex.Replace(result, ",\\s?\"md5\"\\s?:\\s?\".*\"", string.Empty);
-            var ret = _jsonConvertService.ConvertTo<Dictionary<string, WolfxCencItem>>(result);
+            var result = await _httpRequester.GetString(ApiUrl, null, cts.Token);
+            var ret = _jsonConvertService.ConvertTo<WolfxCencEewResponse>(result);
             if (ret is null)
                 return new List<EarthQuakeInfoBase>();
-            return ret.Values.Select(t => t.MapToEarthQuakeInfo()).Where(t =>
-                    DateTimeOffset.FromFileTime(t.UpdateAt.ToFileTime()).ToUnixTimeMilliseconds() >= startTimePointer)
-                .ToList();
+            // EEW 速报源返回"最近一条"：用报告时间判断是否为新事件，避免过去的数据被游标过滤导致不可用
+            if (DateTimeOffset.FromFileTime(ret.UpdateTime.ToFileTime()).ToUnixTimeMilliseconds() < startTimePointer)
+                return new List<EarthQuakeInfoBase>();
+            return new List<EarthQuakeInfoBase> { ret.MapToEarthQuakeInfo() };
         }
         catch (Exception ex)
         {
@@ -56,12 +55,11 @@ public class WolfxCencApi : IEarthQuakeApi
     {
         try
         {
-            var result = await _httpRequester.GetString(ApiUrl, cancellationToken: cancellationToken);
-            result = Regex.Replace(result, ", \"md5\": \".*\"", string.Empty);
-            var ret = _jsonConvertService.ConvertTo<Dictionary<string, WolfxCencItem>>(result);
-            if (ret is null)
+            var result = await _httpRequester.GetString(ApiUrl, null, cancellationToken);
+            var ret = _jsonConvertService.ConvertTo<WolfxCencEewResponse>(result);
+            if (ret?.Id != earthQuakeId)
                 return new List<EarthQuakeInfoBase>();
-            return ret.Values.Select(t => t.MapToEarthQuakeInfo()).Where(t => t.Id == earthQuakeId).ToList();
+            return new List<EarthQuakeInfoBase> { ret.MapToEarthQuakeInfo() };
         }
         catch (Exception ex)
         {
@@ -72,30 +70,45 @@ public class WolfxCencApi : IEarthQuakeApi
     }
 }
 
-public class WolfxCencItem
+public class WolfxCencEewResponse
 {
-    [JsonPropertyName("time")] public DateTime Time { get; set; }
-    [JsonPropertyName("location")] public string? PlaceName { get; set; }
-    [JsonPropertyName("magnitude")] public double Magnitude { get; set; }
-    [JsonPropertyName("depth")] public int Depth { get; set; }
-    [JsonPropertyName("latitude")] public double Latitude { get; set; }
-    [JsonPropertyName("longitude")] public double Longitude { get; set; }
+    [JsonPropertyName("ID")] public string Id { get; set; } = null!;
+
+    [JsonPropertyName("EventID")] public string EventId { get; set; } = null!;
+
+    [JsonPropertyName("ReportTime")] public DateTime UpdateTime { get; set; }
+
+    [JsonPropertyName("ReportNum")] public int ReportNum { get; set; }
+
+    [JsonPropertyName("OriginTime")] public DateTime StartTime { get; set; }
+
+    [JsonPropertyName("HypoCenter")] public string? PlaceName { get; set; }
+
+    [JsonPropertyName("Latitude")] public double Latitude { get; set; }
+
+    [JsonPropertyName("Longitude")] public double Longitude { get; set; }
+
+    [JsonPropertyName("Magnitude")] public double Magnitude { get; set; }
+
+    [JsonPropertyName("Depth")] public double? Depth { get; set; }
+
+    [JsonPropertyName("MaxIntensity")] public double MaxIntensity { get; set; }
 }
 
-public static class WolfxCencItemToEarthQuakeInfoMapper
+public static class WolfxCencResponseToEarthQuakeInfoBaseMapper
 {
-    public static EarthQuakeInfoBase MapToEarthQuakeInfo(this WolfxCencItem item)
+    public static EarthQuakeInfoBase MapToEarthQuakeInfo(this WolfxCencEewResponse res)
     {
         return new EarthQuakeInfoBase
         {
-            Id = item.Time.ToFileTime().ToString(),
-            StartAt = item.Time,
-            UpdateAt = item.Time,
-            Latitude = item.Latitude,
-            Longitude = item.Longitude,
-            Magnitude = item.Magnitude,
-            Depth = item.Depth,
-            PlaceName = item.PlaceName
+            Id = res.Id,
+            StartAt = res.StartTime,
+            UpdateAt = res.UpdateTime,
+            Latitude = res.Latitude,
+            Longitude = res.Longitude,
+            Magnitude = res.Magnitude,
+            Depth = res.Depth ?? 0,
+            PlaceName = res.PlaceName
         };
     }
 }

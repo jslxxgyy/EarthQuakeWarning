@@ -4,6 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="clr-namespace:EarthquakeWaring.App"
     xmlns:pages="clr-namespace:EarthquakeWaring.App.Pages"
+    xmlns:extensions="clr-namespace:EarthquakeWaring.App.Extensions"
+    xmlns:services="clr-namespace:EarthquakeWaring.App.Services"
     xmlns:wpfui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="地震预警"
     Width="1150"
@@ -12,8 +14,12 @@
     ManipulationBoundaryFeedback="MainWindow_OnManipulationBoundaryFeedback"
     Style="{StaticResource UiWindow}"
     WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <extensions:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -23,9 +29,34 @@
         <!--  <wpfui:TitleBar.Header />  -->
         <wpfui:TitleBar Title="地震预警(非官方)" Grid.Row="0" />
 
+        <!-- 配置引导/异常提示条：配置不完整或损坏时显示，引导用户前往设置 -->
+        <Border
+            Grid.Row="1"
+            Padding="12,8"
+            Background="#E0B3261E"
+            Visibility="{Binding BannerVisible, Converter={StaticResource BoolToVisibilityConverter}, Source={extensions:DI Type={x:Type services:ConfigHealthChecker}}}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Foreground="White"
+                    Text="{Binding BannerText, Source={extensions:DI Type={x:Type services:ConfigHealthChecker}}}" />
+                <wpfui:Button
+                    Grid.Column="1"
+                    Margin="12,0,0,0"
+                    Appearance="Primary"
+                    Click="OnNavigatingSettings"
+                    Content="去设置" />
+            </Grid>
+        </Border>
+
         <Grid
             x:Name="RootMainGrid"
-            Grid.Row="1"
+            Grid.Row="2"
             Margin="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />

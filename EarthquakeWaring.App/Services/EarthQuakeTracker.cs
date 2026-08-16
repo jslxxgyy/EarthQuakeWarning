@@ -21,6 +21,7 @@ public class EarthQuakeTracker : IEarthQuakeTracker
     private readonly IEarthQuakeCalculator _earthQuakeCalculator;
     private readonly ISetting<CurrentPosition> _currentPosition;
     private readonly ISetting<TrackerSetting> _trackerSetting;
+    private readonly ISetting<AlertLimit> _alertLimit;
     private readonly ILogger<EarthQuakeTracker> _logger;
     private readonly IServiceProvider _service;
 
@@ -37,7 +38,8 @@ public class EarthQuakeTracker : IEarthQuakeTracker
 
     public EarthQuakeTracker(IEarthQuakeApiWrapper earthQuakeApi, IEarthQuakeCalculator earthQuakeCalculator,
                              ISetting<CurrentPosition> currentPosition, ILogger<EarthQuakeTracker> logger,
-                             IServiceProvider service, ISetting<TrackerSetting> trackerSetting)
+                             IServiceProvider service, ISetting<TrackerSetting> trackerSetting,
+                             ISetting<AlertLimit> alertLimit)
     {
         _earthQuakeApi = earthQuakeApi;
         _earthQuakeCalculator = earthQuakeCalculator;
@@ -45,6 +47,7 @@ public class EarthQuakeTracker : IEarthQuakeTracker
         _logger = logger;
         _service = service;
         _trackerSetting = trackerSetting;
+        _alertLimit = alertLimit;
     }
 
     public TimeSpan SimulateTimeSpan { get; set; } = TimeSpan.Zero;
@@ -140,19 +143,8 @@ public class EarthQuakeTracker : IEarthQuakeTracker
             if (infos.Count == 0)
                 infos = new List<EarthQuakeInfoBase> { earthQuakeInfo };
 
-            if (SimulateTimeSpan == TimeSpan.Zero)
-            {
-                latestInfo = infos[^1];
-            }
-            else
-            {
-                _logger.LogWarning("Simulating with simulatingInfo");
-                var simulatingInfo =
-                    infos.FirstOrDefault(t => t.UpdateAt > DateTime.Now + timeHandler!.Offset - SimulateTimeSpan);
-                if (infos.Count <= 0 && simulatingInfo == null) return;
-                simulatingInfo ??= infos[^1];
-                latestInfo = simulatingInfo;
-            }
+            // 模拟与实时一致：始终使用最新的一条更新，避免首次单条数据与后续更新列表之间产生跳变
+            latestInfo = infos[^1];
 
             if ((DateTime.Now + timeHandler!.Offset - SimulateTimeSpan - latestInfo.StartAt).TotalSeconds >
                 _trackingInformation.TheoryCountDown + 30)
@@ -190,10 +182,9 @@ public class EarthQuakeTracker : IEarthQuakeTracker
             _trackingInformation.Id = id;
             _trackingInformation.Magnitude = magnitude;
 
-            if (_currentPosition.Setting != null)
+            if (_currentPosition.Setting is { Latitude: { } currentLat, Longitude: { } currentLng })
             {
-                _trackingInformation.Distance = _earthQuakeCalculator.GetDistance(_currentPosition.Setting.Latitude,
-                    _currentPosition.Setting.Longitude, latitude, longitude);
+                _trackingInformation.Distance = _earthQuakeCalculator.GetDistance(currentLat, currentLng, latitude, longitude);
                 _trackingInformation.TheoryCountDown =
                     (int)_earthQuakeCalculator.GetCountDownSeconds(depth, _trackingInformation.Distance);
                 _trackingInformation.Intensity =
@@ -233,8 +224,9 @@ public class EarthQuakeTracker : IEarthQuakeTracker
                 if (shouldQuit)
                     return;
 
-                // 烈度小于一级无需弹窗
-                if (_trackingInformation.Intensity < 1)
+                // 未达到用户设置的烈度阈值（区分白天/黑夜）不弹窗
+                if (!ShouldPopupAlert(_trackingInformation, _alertLimit?.Setting ?? new AlertLimit(),
+                        DateTime.Now + timeHandler!.Offset))
                     return;
 
                 _logger.LogInformation(
@@ -328,15 +320,12 @@ public class EarthQuakeTracker : IEarthQuakeTracker
                };
     }
 
-    public static bool ShouldPopupAlert(EarthQuakeTrackingInformation information, AlertLimit alertLimit)
+    public static bool ShouldPopupAlert(EarthQuakeTrackingInformation information, AlertLimit alertLimit, DateTime now)
     {
-        if (information.UpdateTime.Hour is >= 7 and <= 22)
-        {
-            // 日间，仅校核震级（烈度判定已移除）
-            return information.Magnitude >= alertLimit.DayMagnitude;
-        }
+        // 依据当前时刻判断白天（7时-22时）与夜间（23时-次日6时），使用不同的烈度阈值
+        if (now.Hour is >= 7 and <= 22)
+            return information.Intensity >= alertLimit.DayIntensity;
 
-        // 夜间，仅校核震级（烈度判定已移除）
-        return information.Magnitude >= alertLimit.NightMagnitude;
+        return information.Intensity >= alertLimit.NightIntensity;
     }
 }

@@ -20,7 +20,7 @@
         <earthQuakeModels:EarthQuakeTrackingInformation />
     </d:Window.DataContext>
     <Window.Resources>
-        <extensions:EarthQuakeStageToColorBrush x:Key="StageToColor" />
+        <extensions:EarthQuakeIntensityToColorBrush x:Key="IntensityToColor" />
         <extensions:DoubleLimiter x:Key="DoubleLimiter" />
         <extensions:IntensityDescriptor x:Key="IntensityDescriptor" />
         <extensions:CountDownHumanizer x:Key="CountDownHumanizer" />
@@ -46,7 +46,7 @@
             Foreground="White"
             ToolTip="关闭预警窗口" />
 
-        <Grid Background="{Binding Stage, Mode=OneWay, Converter={StaticResource StageToColor}}">
+        <Grid Background="{Binding Intensity, Mode=OneWay, Converter={StaticResource IntensityToColor}}">
         <Grid.RowDefinitions>
             <RowDefinition Height="22" />
             <!--  TextTip  -->

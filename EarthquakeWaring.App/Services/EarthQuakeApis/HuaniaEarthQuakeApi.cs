@@ -122,6 +122,7 @@ public static class HuaniaEarthQuakeToEarthQuakeInfoMapper
                {
                    Id = earthQuake.EventId.ToString(),
                    StartAt = earthQuake.StartAt,
+                   UpdateAt = earthQuake.UpdateAt,
                    Latitude = earthQuake.Latitude,
                    Longitude = earthQuake.Longitude,
                    Magnitude = earthQuake.Magnitude,

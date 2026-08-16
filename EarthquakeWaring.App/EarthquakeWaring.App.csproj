@@ -14,6 +14,8 @@
         <FileVersion>2.0.0.0</FileVersion>
         <NeutralLanguage>zh-Hans</NeutralLanguage>
         <UseWindowsForms>True</UseWindowsForms>
+        <!-- 将图标嵌入可执行文件，供任务栏与文件资源管理器显示 -->
+        <ApplicationIcon>original.ico</ApplicationIcon>
         <PackageIcon>original.ico</PackageIcon>
     </PropertyGroup>
 
@@ -41,6 +43,7 @@
         <None Update="original.ico">
             <Pack>True</Pack>
             <PackagePath></PackagePath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 

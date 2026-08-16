@@ -71,9 +71,10 @@ public partial class EarthQuakeExamplesPage : Page
             Magnitude = latestInfo.Magnitude
         };
 
-        if (_currentPosition.Setting == null) return trackingInformation;
-        trackingInformation.Distance = _calculator.GetDistance(_currentPosition.Setting.Latitude,
-            _currentPosition.Setting.Longitude, trackingInformation.Latitude, trackingInformation.Longitude);
+        if (_currentPosition.Setting is not { Latitude: { } currentLat, Longitude: { } currentLng })
+            return trackingInformation;
+        trackingInformation.Distance = _calculator.GetDistance(currentLat, currentLng, trackingInformation.Latitude,
+            trackingInformation.Longitude);
         trackingInformation.TheoryCountDown =
             (int)_calculator.GetCountDownSeconds(trackingInformation.Depth,
                 trackingInformation.Distance);
@@ -81,7 +82,8 @@ public partial class EarthQuakeExamplesPage : Page
             _calculator.GetIntensity(trackingInformation.Magnitude, trackingInformation.Distance);
         trackingInformation.Stage = EarthQuakeTracker.GetEarthQuakeAlertStage(trackingInformation);
         trackingInformation.DontUseShouldAlert =
-            EarthQuakeTracker.ShouldPopupAlert(trackingInformation, _alertLimit.Setting ?? new AlertLimit());
+            EarthQuakeTracker.ShouldPopupAlert(trackingInformation, _alertLimit.Setting ?? new AlertLimit(),
+                DateTime.Now);
         return trackingInformation;
     }
 

@@ -95,10 +95,21 @@ public partial class EarlyWarningWindow : Window
     {
         var player = new MediaPlayer();
         player.MediaOpened += OnMediaOpened;
+        player.MediaFailed += OnMediaFailed;
         player.Open(new Uri(filePath, UriKind.Absolute));
         _preloadedPlayers[filePath] = player;
         _preloadedPlayerSet.Add(player);
         lock (_audioLock) _activePlayers.Add(player);
+    }
+
+    private static void OnMediaFailed(object? sender, ExceptionEventArgs e)
+    {
+        if (sender is not MediaPlayer player) return;
+        foreach (var kvp in _preloadedPlayers)
+        {
+            if (kvp.Value == player)
+                System.Diagnostics.Debug.WriteLine($"MediaPlayer failed to open {kvp.Key}: {e.ErrorException?.Message}");
+        }
     }
 
     private static void OnMediaOpened(object? sender, EventArgs e)
@@ -125,36 +136,15 @@ public partial class EarlyWarningWindow : Window
     private static void PlayOrEnqueue(string filePath)
     {
         if (!_preloadedPlayers.TryGetValue(filePath, out var player)) return;
-
-        lock (_readyFiles)
-        {
-            if (_readyFiles.Contains(filePath))
-            {
-                PlayFromStart(player);
-                return;
-            }
-        }
-
-        // 未就绪 → 订阅 MediaOpened 待就绪后立即播放
-        EventHandler? handler = null;
-        handler = (_, _) =>
-        {
-            player.MediaOpened -= handler;
-            lock (_readyFiles) _readyFiles.Add(filePath);
-            PlayFromStart(player);
-        };
-        player.MediaOpened += handler;
+        PlayFromStart(player);
     }
 
     private static void PlayFromStart(MediaPlayer player)
     {
-        try
-        {
-            player.Stop();
-            player.Position = TimeSpan.Zero;
-            player.Play();
-        }
-        catch { }
+        // 分步容错：即使 Stop/Position 因媒体未完全就绪抛异常，也要确保 Play 被调用
+        try { player.Stop(); } catch { }
+        try { player.Position = TimeSpan.Zero; } catch { }
+        try { player.Play(); } catch { }
     }
 
     // ── 事件响应 ──
@@ -190,11 +180,11 @@ public partial class EarlyWarningWindow : Window
             }
             else
             {
-                // 奇数秒 → 播报 level.mp3（表示震级）
-                if (intensity > 2)
+                // 奇数秒 → 根据烈度播报"滴"声（level.mp3）：烈度≥4 一声，≥6 两声
+                if (intensity >= 4)
                 {
                     PlayOrEnqueue(LevelFile);
-                    if (intensity > 4)
+                    if (intensity >= 6)
                     {
                         var _ = Dispatcher.InvokeAsync(async () =>
                         {
@@ -223,7 +213,7 @@ public partial class EarlyWarningWindow : Window
                 }
             }
 
-            if (intensity > 4)
+            if (intensity >= 6)
             {
                 PlayOrEnqueue(LevelFile);
                 var _ = Dispatcher.InvokeAsync(async () =>
@@ -232,7 +222,7 @@ public partial class EarlyWarningWindow : Window
                     PlayOrEnqueue(LevelFile);
                 });
             }
-            else if (intensity > 2)
+            else if (intensity >= 4)
             {
                 PlayOrEnqueue(LevelFile);
             }

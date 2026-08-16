@@ -7,19 +7,21 @@ namespace EarthquakeWaring.App.Infrastructure.Models.SettingModels;
 
 public class AlertLimit : INotificationOption
 {
-    private double _dayMagnitude = 3.0;
-    private double _nightMagnitude = 2.0;
+    private double _dayIntensity = 3.0;
+    private double _nightIntensity = 2.0;
 
-    public double DayMagnitude
+    /// <summary>日间（7时-22时）报警烈度阈值：烈度大于等于此值才弹窗</summary>
+    public double DayIntensity
     {
-        get => _dayMagnitude;
-        set => SetField(ref _dayMagnitude, value);
+        get => _dayIntensity;
+        set => SetField(ref _dayIntensity, value);
     }
 
-    public double NightMagnitude
+    /// <summary>夜间（23时-次日6时）报警烈度阈值：烈度大于等于此值才弹窗</summary>
+    public double NightIntensity
     {
-        get => _nightMagnitude;
-        set => SetField(ref _nightMagnitude, value);
+        get => _nightIntensity;
+        set => SetField(ref _nightIntensity, value);
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

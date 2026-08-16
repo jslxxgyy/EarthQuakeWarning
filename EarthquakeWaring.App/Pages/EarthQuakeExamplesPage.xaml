@@ -15,7 +15,7 @@
         <viewModels:EarthQuakesListPageViewModel />
     </d:Page.DataContext>
     <Page.Resources>
-        <extensions:EarthQuakeStageToColorBrush x:Key="StageToColor" />
+        <extensions:EarthQuakeIntensityToColorBrush x:Key="IntensityToColor" />
         <extensions:DoubleLimiter x:Key="DoubleLimiter" />
         <extensions:DateTimeHumanizer x:Key="DateTimeHumanizer" />
         <extensions:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
@@ -40,7 +40,7 @@
                             Width="45"
                             Height="45"
                             Margin="5"
-                            Background="{Binding Stage, Converter={StaticResource StageToColor}}"
+                            Background="{Binding Intensity, Converter={StaticResource IntensityToColor}}"
                             CornerRadius="5">
                             <wpfui:SymbolIcon Symbol="ErrorCircle24" Visibility="{Binding DontUseShouldAlert, Converter={StaticResource BoolToVisibilityConverter}}" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                         </Border>

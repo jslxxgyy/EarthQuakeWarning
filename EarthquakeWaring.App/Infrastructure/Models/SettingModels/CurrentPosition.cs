@@ -7,16 +7,17 @@ namespace EarthquakeWaring.App.Infrastructure.Models.SettingModels;
 
 public class CurrentPosition : INotificationOption
 {
-    private double _latitude = 30.539772;
-    private double _longitude = 104.075426;
+    // 默认留空（null）：首次使用时经纬度输入框为空，避免用户误认为已自动定位
+    private double? _latitude;
+    private double? _longitude;
 
-    public double Latitude
+    public double? Latitude
     {
         get => _latitude;
         set => SetField(ref _latitude, value);
     }
 
-    public double Longitude
+    public double? Longitude
     {
         get => _longitude;
         set => SetField(ref _longitude, value);

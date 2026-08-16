@@ -35,6 +35,7 @@ public class WolfxSceewApi : IEarthQuakeApi
             var ret = _jsonConvertService.ConvertTo<WolfxSceewResponse>(result);
             if (ret is null)
                 return new List<EarthQuakeInfoBase>();
+            // EEW 速报源返回"最近一条"：用报告时间判断是否为新事件，避免过去的数据被游标过滤导致不可用
             if (DateTimeOffset.FromFileTime(ret.UpdateTime.ToFileTime()).ToUnixTimeMilliseconds() < startTimePointer)
                 return new List<EarthQuakeInfoBase>();
             return new List<EarthQuakeInfoBase> { ret.MapToEarthQuakeInfo() };
@@ -77,6 +78,7 @@ public class WolfxSceewResponse
     [JsonPropertyName("MaxIntensity")] public double MaxIntensity { get; set; }
     [JsonPropertyName("OriginTime")] public DateTime StartTime { get; set; }
     [JsonPropertyName("ReportTime")] public DateTime UpdateTime { get; set; }
+    [JsonPropertyName("Depth")] public double? Depth { get; set; }
 }
 
 public static class WolfxSceewResponseToEarthQuakeInfoBaseMapper
@@ -91,7 +93,7 @@ public static class WolfxSceewResponseToEarthQuakeInfoBaseMapper
             Latitude = res.Latitude,
             Longitude = res.Longitude,
             Magnitude = res.Magunitude,
-            Depth = 0,
+            Depth = res.Depth ?? 0,
             PlaceName = res.PlaceName
         };
     }
