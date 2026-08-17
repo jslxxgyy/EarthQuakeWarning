@@ -63,6 +63,7 @@ Windows 10 1809 及以上，或 Windows 10 LTSC 2019 及以上，内核版本 10
 
 * [成都高新减灾研究所](http://www.365icl.com/) / [成都市美幻科技有限公司](http://www.huania.com/) 的 [地震预警](https://download.chinaeew.cn/mobile)
 * [Wolfx 的 减灾 API](https://api.wolfx.jp/)
+* MIUI 地震预警
 
 ## 许可
 
