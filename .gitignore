@@ -4,6 +4,8 @@ obj/
 /packages/
 Publish/
 publish-release/
+dist/
+dist-build/
 
 riderModule.iml
 /_ReSharper.Caches/
