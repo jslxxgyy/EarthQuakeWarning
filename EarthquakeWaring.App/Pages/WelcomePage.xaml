@@ -13,22 +13,22 @@
         <TextBlock
             FontSize="28"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="此 App 非官方提供, 请勿用于生产环境"
+            Text="此 App 非官方提供,仅供学习交流使用, 请勿用于严肃环境"
             TextAlignment="Center" />
         <TextBlock
             FontSize="28"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="仅供学习交流使用，请勿传播或进行二次分享，下载后请在 24 小时内删除"
+            Text="本软件与任何官方机构无直接联系，如有侵犯权益请联系开发者"
             TextAlignment="Center" />
         <TextBlock
             FontSize="28"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="App内避震建议仅供参考，开发者您所采取的行动导致的任何后果不承担责任"
+            Text="App 内避震建议仅供参考，开发者您所采取的行动导致的任何后果不承担责任"
             TextAlignment="Center" />
         <TextBlock
             FontSize="28"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="使用前请前往设置进行配置"
+            Text="使用前请前往设置页进行配置"
             TextAlignment="Center" />
         <TextBlock
             FontSize="28"
